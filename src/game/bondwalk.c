@@ -1478,7 +1478,7 @@ void bwalkApplyMoveData(struct movedata *data)
 			&& g_Vars.currentplayer->onladder == false
 			&& bmoveGetCrouchPos() == CROUCHPOS_STAND) {
 		g_Vars.currentplayer->bdeltapos.y = 6.0f;
-		g_Vars.currentplayer->vv_manground += 0.2f;
+		g_Vars.currentplayer->vv_manground += 1.0f;
 	}
 #endif
 }
