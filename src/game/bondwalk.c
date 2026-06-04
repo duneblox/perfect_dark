@@ -1421,6 +1421,19 @@ void bwalkApplyMoveData(struct movedata *data)
 			g_Vars.currentplayer->speedsideways = -1;
 		}
 
+
+#ifndef PLATFORM_N64
+        {
+            f32 diagLen = sqrtf(
+                g_Vars.currentplayer->speedforwards * g_Vars.currentplayer->speedforwards +
+                g_Vars.currentplayer->speedsideways * g_Vars.currentplayer->speedsideways
+            );
+            if (diagLen > 1.0f) {
+                g_Vars.currentplayer->speedforwards /= diagLen;
+                g_Vars.currentplayer->speedsideways /= diagLen;
+            }
+        }
+#endif
 		g_Vars.currentplayer->speedforwards *= 1.08f;
 		g_Vars.currentplayer->speedforwards *= g_Vars.currentplayer->speedboost;
 
@@ -1464,8 +1477,8 @@ void bwalkApplyMoveData(struct movedata *data)
 			&& g_Vars.currentplayer->isfalling == false
 			&& g_Vars.currentplayer->onladder == false
 			&& bmoveGetCrouchPos() == CROUCHPOS_STAND) {
-		g_Vars.currentplayer->bdeltapos.y = 30.0f;
-		g_Vars.currentplayer->vv_manground += 1.0f;
+		g_Vars.currentplayer->bdeltapos.y = 6.0f;
+		//g_Vars.currentplayer->vv_manground += 1.0f;
 	}
 #endif
 }
