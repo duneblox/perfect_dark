@@ -966,7 +966,9 @@ void bwalkUpdateVertical(void)
 		}
 	}
 
-	if (g_Vars.currentplayer->vv_manground > g_Vars.currentplayer->vv_ground) {
+	if (g_Vars.currentplayer->vv_manground <= g_Vars.currentplayer->vv_ground + 5.0f) {
+		g_Vars.currentplayer->vv_manground = g_Vars.currentplayer->vv_ground;
+    } else {	
 		// Not standing on ground - probably falling, or on an object of some sort
 		fallspeed = g_Vars.currentplayer->bdeltapos.y;
 		newmanground = g_Vars.currentplayer->vv_manground;
@@ -1010,6 +1012,7 @@ void bwalkUpdateVertical(void)
 			}
 		} else {
 			// Not falling
+			
 #if VERSION >= VERSION_NTSC_1_0
 			if (g_Vars.normmplayerisrunning == false
 					&& g_Vars.currentplayer->vv_ground < g_Vars.currentplayer->vv_manground - 30) {
@@ -1102,9 +1105,9 @@ void bwalkUpdateVertical(void)
 				}
 			}
 
-			if (g_Vars.mplayerisrunning == false
-					&& (chr->headnum == HEAD_DARK_COMBAT || chr->headnum == HEAD_DARK_FROCK)
-					&& g_Vars.lvframe60 - g_Vars.currentplayer->fallstart > TICKS(40)) {
+			if (g_Vars.currentplayer->bdeltapos.y < -10.0f
+					g_Vars.mplayerisrunning == false
+					&& (chr->headnum == HEAD_DARK_COMBAT || chr->headnum == HEAD_DARK_FROCK)) {
 				// Play Jo landing grunt
 				s32 sounds[] = {
 					SFX_JO_LANDING_046F,

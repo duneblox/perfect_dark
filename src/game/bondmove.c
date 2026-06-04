@@ -2373,7 +2373,8 @@ void bmoveTick(bool allowc1x, bool allowc1y, bool allowc1buttons, bool ignorec2)
 	// Update footstep sounds
 	if ((g_Vars.currentplayer->bondmovemode == MOVEMODE_WALK || g_Vars.currentplayer->bondmovemode == MOVEMODE_GRAB)
 			&& (g_Vars.currentplayer->speedforwards || g_Vars.currentplayer->speedsideways)
-			&& (!g_Vars.normmplayerisrunning || PLAYERCOUNT() == 1)) {
+			&& (!g_Vars.normmplayerisrunning || PLAYERCOUNT() == 1)) 
+        	&& (g_Vars.currentplayer->vv_manground <= g_Vars.currentplayer->vv_ground + 1.0f) {
 		chr = g_Vars.currentplayer->prop->chr;
 
 		if (g_Vars.currentplayer->cameramode == CAMERAMODE_DEFAULT
