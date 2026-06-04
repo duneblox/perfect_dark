@@ -28,6 +28,7 @@
 #include "types.h"
 #ifndef PLATFORM_N64
 extern f32 fabsf(f32);
+#include "input.h"
 #endif
 
 void bwalkInit(void)
@@ -1456,8 +1457,17 @@ void bwalkApplyMoveData(struct movedata *data)
 			bwalkAdjustCrouchPos(1);
 		}
 
-		g_Vars.currentplayer->eyesshut = data->eyesshut;
+			g_Vars.currentplayer->eyesshut = data->eyesshut;
 	}
+#ifndef PLATFORM_N64
+	if (inputKeyJustPressed(VK_SPACE)
+			&& g_Vars.currentplayer->isfalling == false
+			&& g_Vars.currentplayer->onladder == false
+			&& bmoveGetCrouchPos() == CROUCHPOS_STAND) {
+		g_Vars.currentplayer->bdeltapos.y = 30.0f;
+		g_Vars.currentplayer->vv_manground += 1.0f;
+	}
+#endif
 }
 
 void bwalkUpdateSpeedTheta(void)

@@ -190,11 +190,12 @@ void inputSetDefaultKeyBinds(s32 cidx, s32 n64mode)
 {
 	// TODO: make VK constants for all these
 	static const u32 pckbbinds[][3] = {
+		{ CK_A, 			VK_SPACE,		     0					 },  // Jump
 		{ CK_B,             SDL_SCANCODE_E,      0                   },
 		{ CK_X,             SDL_SCANCODE_R,      0                   },
 		{ CK_RTRIG,         VK_MOUSE_RIGHT,      SDL_SCANCODE_Z      },
 		{ CK_LTRIG,         SDL_SCANCODE_F,      SDL_SCANCODE_X      },
-		{ CK_ZTRIG,         VK_MOUSE_LEFT,       SDL_SCANCODE_SPACE  },
+		{ CK_ZTRIG,         VK_MOUSE_LEFT,       0					 },
 		{ CK_START,         SDL_SCANCODE_TAB,    0                   },
 		{ CK_DPAD_D,        SDL_SCANCODE_Q,      VK_MOUSE_MIDDLE     },
 		{ CK_DPAD_U,        0,                   0                   },
@@ -238,7 +239,7 @@ void inputSetDefaultKeyBinds(s32 cidx, s32 n64mode)
 		{ CK_B,          SDL_SCANCODE_E,      0                  },
 		{ CK_RTRIG,      VK_MOUSE_RIGHT,      SDL_SCANCODE_LALT  },
 		{ CK_LTRIG,      SDL_SCANCODE_F,      0                  },
-		{ CK_ZTRIG,      VK_MOUSE_LEFT,       SDL_SCANCODE_SPACE },
+		{ CK_ZTRIG,      VK_MOUSE_LEFT,       0					 },
 		{ CK_START,      SDL_SCANCODE_RETURN, 0                  },
 		{ CK_C_D,        SDL_SCANCODE_S,      0                  },
 		{ CK_C_U,        SDL_SCANCODE_W,      0                  },
@@ -811,10 +812,21 @@ s32 inputReadController(s32 idx, OSContPad *npad)
 		}
 	}
 
-	const s32 xdiff = (inputBindPressed(idx, CK_STICK_XPOS) - inputBindPressed(idx, CK_STICK_XNEG));
+/*	const s32 xdiff = (inputBindPressed(idx, CK_STICK_XPOS) - inputBindPressed(idx, CK_STICK_XNEG));
 	const s32 ydiff = (inputBindPressed(idx, CK_STICK_YPOS) - inputBindPressed(idx, CK_STICK_YNEG));
 	npad->stick_x = xdiff < 0 ? -0x80 : (xdiff > 0 ? 0x7F : 0);
-	npad->stick_y = ydiff < 0 ? -0x80 : (ydiff > 0 ? 0x7F : 0);
+	npad->stick_y = ydiff < 0 ? -0x80 : (ydiff > 0 ? 0x7F : 0);*/
+	const s32 xdiff = (inputBindPressed(idx, CK_STICK_XPOS) - inputBindPressed(idx, CK_STICK_XNEG));
+	const s32 ydiff = (inputBindPressed(idx, CK_STICK_YPOS) - inputBindPressed(idx, CK_STICK_YNEG));
+	if (xdiff && ydiff) {
+		// Normalize diagonal: scale both axes by 1/sqrt(2) ≈ 0.7071
+		// 0x7F * 0.7071 ≈ 90 (0x5A)
+		npad->stick_x = xdiff < 0 ? -0x5A : 0x5A;
+		npad->stick_y = ydiff < 0 ? -0x5A : 0x5A;
+	} else {
+		npad->stick_x = xdiff < 0 ? -0x80 : (xdiff > 0 ? 0x7F : 0);
+		npad->stick_y = ydiff < 0 ? -0x80 : (ydiff > 0 ? 0x7F : 0);
+	}
 
 	const struct controllercfg *cfg = &padsCfg[idx];
 
