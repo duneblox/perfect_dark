@@ -967,8 +967,17 @@ void bwalkUpdateVertical(void)
 	}
 
 	if (g_Vars.currentplayer->vv_manground <= g_Vars.currentplayer->vv_ground + 5.0f) {
-		g_Vars.currentplayer->vv_manground = g_Vars.currentplayer->vv_ground;
-    } else {	
+		// Within tolerance: treat as on ground, snap down
+    	g_Vars.currentplayer->vv_manground = g_Vars.currentplayer->vv_ground;
+
+    	if (g_Vars.currentplayer->isfalling) {
+			g_Vars.currentplayer->isfalling = false;
+		}
+
+		if (g_Vars.currentplayer->vv_manground <= -30000) {
+			playerDie(true);
+		}
+	} else {
 		// Not standing on ground - probably falling, or on an object of some sort
 		fallspeed = g_Vars.currentplayer->bdeltapos.y;
 		newmanground = g_Vars.currentplayer->vv_manground;
@@ -989,8 +998,7 @@ void bwalkUpdateVertical(void)
 			newfallspeed = g_Vars.currentplayer->vv_manground - g_Vars.currentplayer->vv_ground;
 			newmanground = g_Vars.currentplayer->vv_ground;
 
-			fallspeed = sqrtf(g_Vars.currentplayer->bdeltapos.y *
-					g_Vars.currentplayer->bdeltapos.y +
+			fallspeed = sqrtf(g_Vars.currentplayer->bdeltapos.y * g_Vars.currentplayer->bdeltapos.y +
 					(((newfallspeed + newfallspeed) * 0.277777777f) / 60.0f) * 60.0f);
 			fallspeed = -fallspeed;
 		}
@@ -1011,34 +1019,33 @@ void bwalkUpdateVertical(void)
 				}
 			}
 		} else {
-			// Not falling
-			
+			// Not falling, but off the ground (standing on objects / heads etc.)
 #if VERSION >= VERSION_NTSC_1_0
 			if (g_Vars.normmplayerisrunning == false
 					&& g_Vars.currentplayer->vv_ground < g_Vars.currentplayer->vv_manground - 30) {
 				// Not falling - but still at least 30 units off the ground.
-				// Must be something in the way...
-				prop = cdGetObstacleProp();
+                // Must be something in the way...
+                prop = cdGetObstacleProp();
 
-				if (prop) {
-					if (prop->type == PROPTYPE_CHR) {
-						// Landed on top of a chr
-						if (prop->chr->inlift) {
-							chrYeetFromPos(prop->chr, &g_Vars.currentplayer->prop->pos, 0);
-						}
-					} else if (prop->type == PROPTYPE_PLAYER) {
-						// Landed on top of a player
-						u32 prevplayernum = g_Vars.currentplayernum;
-						setCurrentPlayerNum(playermgrGetPlayerNumByProp(prop));
+                if (prop) {
+                    if (prop->type == PROPTYPE_CHR) {
+                        // Landed on top of a chr
+                        if (prop->chr->inlift) {
+                            chrYeetFromPos(prop->chr, &g_Vars.currentplayer->prop->pos, 0);
+                        }
+                    } else if (prop->type == PROPTYPE_PLAYER) {
+                        // Landed on top of a player
+                        u32 prevplayernum = g_Vars.currentplayernum;
+                        setCurrentPlayerNum(playermgrGetPlayerNumByProp(prop));
 
-						if (g_Vars.currentplayer->inlift) {
-							playerDieByShooter(prevplayernum, true);
-						}
+                        if (g_Vars.currentplayer->inlift) {
+                            playerDieByShooter(prevplayernum, true);
+                        }
 
-						setCurrentPlayerNum(prevplayernum);
-					}
-				}
-			}
+                        setCurrentPlayerNum(prevplayernum);
+                    }
+                }
+            }
 #endif
 
 			g_Vars.currentplayer->bdeltapos.y = VERSION >= VERSION_NTSC_1_0 ? 0.0f : 0;
@@ -1051,17 +1058,7 @@ void bwalkUpdateVertical(void)
 				playerDie(true);
 			}
 		}
-	} else {
-		// Not falling
-		if (g_Vars.currentplayer->isfalling) {
-			g_Vars.currentplayer->isfalling = false;
-		}
-
-		if (g_Vars.currentplayer->vv_manground <= -30000) {
-			playerDie(true);
-		}
 	}
-
 	if (g_Vars.currentplayer->bdeltapos.y < 0 &&
 			g_Vars.currentplayer->vv_manground <= g_Vars.currentplayer->vv_ground) {
 		// Landing after a fall
@@ -1106,7 +1103,7 @@ void bwalkUpdateVertical(void)
 			}
 
 			if (g_Vars.currentplayer->bdeltapos.y < -10.0f
-					g_Vars.mplayerisrunning == false
+					&& g_Vars.mplayerisrunning == false
 					&& (chr->headnum == HEAD_DARK_COMBAT || chr->headnum == HEAD_DARK_FROCK)) {
 				// Play Jo landing grunt
 				s32 sounds[] = {
@@ -1480,7 +1477,7 @@ void bwalkApplyMoveData(struct movedata *data)
 			&& g_Vars.currentplayer->isfalling == false
 			&& g_Vars.currentplayer->onladder == false
 			&& bmoveGetCrouchPos() == CROUCHPOS_STAND) {
-		g_Vars.currentplayer->bdeltapos.y = 6.7f;
+		g_Vars.currentplayer->bdeltapos.y = 6.2f;
 		g_Vars.currentplayer->vv_manground += 1.0f;
 	}
 #endif
