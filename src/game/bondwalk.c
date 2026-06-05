@@ -1102,7 +1102,7 @@ void bwalkUpdateVertical(void)
 				}
 			}
 
-			if (g_Vars.currentplayer->bdeltapos.y < -10.0f
+			if (g_Vars.currentplayer->bdeltapos.y < -8.0f
 					&& g_Vars.mplayerisrunning == false
 					&& (chr->headnum == HEAD_DARK_COMBAT || chr->headnum == HEAD_DARK_FROCK)) {
 				// Play Jo landing grunt
@@ -1477,8 +1477,8 @@ void bwalkApplyMoveData(struct movedata *data)
 			&& g_Vars.currentplayer->isfalling == false
 			&& g_Vars.currentplayer->onladder == false
 			&& bmoveGetCrouchPos() == CROUCHPOS_STAND) {
-		g_Vars.currentplayer->bdeltapos.y = 6.2f;
-		g_Vars.currentplayer->vv_manground += 1.0f;
+		g_Vars.currentplayer->bdeltapos.y = 5.7f;
+		g_Vars.currentplayer->vv_manground += 0.4f;
 	}
 #endif
 }

@@ -1256,6 +1256,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 				}
 
 				if (controlmode == CONTROLMODE_PC) {
+#ifndef PLATFORM_N64					
 					if (!g_Vars.currentplayer->insightaimmode) {
 						movedata.analogstrafe = c2stickx;
 						movedata.analogwalk = c2sticky;
@@ -1264,6 +1265,7 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 						movedata.analogstrafe = 0.f;
 						movedata.analogwalk = 0.f;
 					}
+#endif					
 				}
 
 				if (optionsGetAimControl(g_Vars.currentplayerstats->mpindex) == AIMCONTROL_HOLD) {
@@ -1333,11 +1335,13 @@ void bmoveProcessInput(bool allowc1x, bool allowc1y, bool allowc1buttons, bool i
 
 						movedata.digitalstepforward = !g_Vars.currentplayer->insightaimmode && (c1buttons & sumask);
 						movedata.digitalstepback = !g_Vars.currentplayer->insightaimmode && (c1buttons & sdmask);
+#ifndef PLATFORM_N64						
 						movedata.canlookahead = (controlmode == CONTROLMODE_PC) && !g_Vars.currentplayer->insightaimmode && (c2stickx || c2sticky);
 						movedata.cannaturalpitch = !g_Vars.currentplayer->insightaimmode;
 						movedata.speedvertadown = 0;
 						movedata.speedvertaup = 0;
 						movedata.cannaturalturn = !g_Vars.currentplayer->insightaimmode;
+#endif						
 
 #ifndef PLATFORM_N64
 						if (controlmode == CONTROLMODE_PC) {
